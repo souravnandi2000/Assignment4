@@ -1,0 +1,307 @@
+
+Peer Graded Assignment: Running a Chi-Square Test of Independence
+
+Following completion of the steps described above, create a blog  entry where you submit syntax used to run a Chi-Square Test (copied and  pasted from your program) along with corresponding output and a few  sentences of interpretation.
+H0 - There is no relationship between Freedom (Polictyscore) and Army Size 
+H1- There is relationship between Freedom & Army Size
+
+H0 - There is no relationship between Freedom & GDP (incomeperperson)
+H1 - There is relationship between Freedom & GDP
+
+Chi squared test is used for category to category analysis. I created the following categores based on frequency intervals.
+
+Polityscore - Undemocratic (<0) & Democratic (>=0)
+ArmySize - Small, Medium & Large
+GDP - Low, Med & High
+SAS code:
+
+libname mydata "/courses/d1406ae5ba27fe300 " access=readonly;
+data new; set mydata.gapminder;
+label incomeperperson="2010 GDP"
+armedforcesrate="Army as % of Total Labor Force"
+employrate="% of Total Population Employed above Age 15 as of 2007"
+polityscore ="2009 Democracy Score (-10 to +10)"
+Freedom ="Democratic or Undemocratic"
+GDP= "GDP in 3 quantiles "
+ArmySize = "Armed forces in 3 quantiles";
+if incomeperperson LE 1295.7426861 then GDP = "Low ";
+else if incomeperperson LE 5900.6169445 then GDP = "Med ";
+else GDP = "High";
+if armedforcesrate LE 0.5739204 then ArmySize = "Small ";
+else if armedforcesrate LE 1.266624then ArmySize = "Medium";
+else ArmySize = "Large ";
+if polityscore LE 0 then Freedom = "Undemocratic ";
+else Freedom = "Democratic";
+proc sort; by country;
+/*proc freq; tables Response * Explanatory/chisq; */
+proc freq; tables Freedom * GDP /chisq;
+proc freq; tables Freedom * ArmySize /chisq;
+run;
+DATA COMPARISON1; SET NEW;
+IF GDP ="Low " OR GDP ="Med ";
+PROC SORT; BY country;
+proc freq; tables Freedom * GDP /chisq;
+RUN;
+DATA COMPARISON2; SET NEW;
+IF GDP ="Med " OR GDP ="High";
+PROC SORT; BY country;
+proc freq; tables Freedom * GDP /chisq;
+RUN;
+DATA COMPARISON3; SET NEW;
+IF ArmySize = "Small " OR ArmySize = "Medium";
+PROC SORT; BY country;
+proc freq; tables Freedom * ArmySize /chisq;
+RUN;
+DATA COMPARISON3; SET NEW;
+IF ArmySize = "Medium" OR ArmySize = "Large ";
+PROC SORT; BY country;
+proc freq; tables Freedom * ArmySize /chisq;
+RUN;
+Relationship between Freedom & Army Size
+H0 - There is no relationship between Freedom (Polityscore) and Army Size 
+H1- There is relationship between Freedom & Army Size
+
+Using democratic/undemocratic as the response variable & the army size as the explanatory variable, the P value came to be 0.005. 
+
+For the Bonferroni Adjustment, we get an adjusted P value of (0.05/3) = 0.0167. 
+
+Looking at the Column % for both Democratic & Undemocratic, we see larger army size for democratic countries & smaller army size for undemocratic countries.
+
+Doing Chi squared on each group of GDP gives us p-values of 0.0012 &  0.0917. 0.0012 being > 0.0167 shows there is significant difference between medium & small army sizes.0.0917 being > 0.0167 there is no significant  difference  between the large & medium army groups. 
+
+The P value of the Chi square analysis is 0.0051, which is < 0.05, so the  null hypothesis can be rejected with enough confidence. i.e. There is relationship between freedom & army size.
+
+
+
+
+Relationship between Freedom & GDP
+H0 - There is no relationship between Freedom & GDP (incomeperperson)
+H1 - There is relationship between Freedom & GDP
+
+Using democratic/undemocratic as the response variable & the GDP as the explanatory variable, the P value came to be 0.4856. 
+
+For the Bonferroni Adjustment, we get an adjusted P value of (0.05/3) = 0.0167. 
+
+Looking at the Column % for both Democratic & Undemocratic, we see higher GDP for democratic countries & lower GDP for  undemocratic countries.
+
+Doing Chi squared on each group of GDP gives us p-values of 0.4789 & 0.6616. These both being > 0.0167 shows there is no significant difference. 
+
+The P value of the Chi square analysis is 0.4856, so the null hypothesis cannot be rejected. 
+
+
+
+
+More from @pr-course
+pr-course
+Peer Graded Assignment: Running an analysis of variance
+Following completion of the steps described above, create a blog  entry where you submit syntax used to run an ANOVA (copied and pasted  from your program) along with corresponding output and a few sentences  of interpretation. 
+SAS code:
+
+libname mydata "/courses/d1406ae5ba27fe300 " access=readonly;
+data new; set mydata.gapminder;
+label incomeperperson="2010 GDP"
+armedforcesrate="Army as % of Total Labor Force"
+employrate="% of Total Population Employed above Age 15 as of 2007"
+polityscore ="2009 Democracy Score (-10 to +10)"
+urbanrate="2008 Urban Population (% of Total)";
+proc sort; by country;
+PROC ANOVA; CLASS polityscore;
+MODEL armedforcesrate= polityscore ;
+MEANS polityscore/duncan;
+PROC ANOVA; CLASS polityscore;
+MODEL incomeperperson = polityscore ;
+MEANS polityscore/duncan;
+run;
+Anova procedure of Democracy (politico score) vs 2010 GDP
+Explanatory variable = Democracy (politico score) 
+
+Response variable = 2010 GDP (Income per person)
+
+There is a big variation (range) in income for countries with the lowest and highest level of democracy. 
+
+There is little variation (range) for countries towards the middle of the spectrum. There may be less data for these countries that may be causing it too. 
+
+
+Anova procedure of Democracy (politico score) vs 2010 GDP
+Explanatory variable = Democracy (politico score) 
+
+Response variable = Armed forces rate
+
+There is a big variation (range) in income for countries with the lowest level of democracy. The % of total armed forces rate is also the highest in country with -9 as democracy with mean being 4.9, but the range is also large.
+
+
+Complete result link 
+https://dl.dropboxusercontent.com/u/527953/Running%20an%20analysis%20of%20variance-results.pdf
+pr-course
+Peer Graded Assignment: Creating graphs for your data
+Below is code for the program
+
+libname mydata "/courses/d1406ae5ba27fe300 " access=readonly;
+data new; set mydata.gapminder;
+label incomeperperson="2010 GDP"
+armedforcerate="Army as % of Total Labor Force"
+employrate="% of Total Population Employed above Age 15 as of 2007"
+polityscore ="2009 Democracy Score (-10 to +10)";
+proc sort; by country;
+proc gchart; vbar polityscore incomeperperson armedforcesrate / type=pct;
+proc univariate; var polityscore incomeperperson armedforcesrate ;
+proc gplot; plot armedforcerate*polityscore;
+proc gplot; plot incomeperperson*polityscore;
+run;
+Univariate Graph of Armed Force Rate 
+The graphs is unimodal and seems to be skewed to the right. This seems  in keeping with what you’d expect from real world data. More countries  would have a lower armed force rate, while there would be a few  countries on the end with a higher rate of armed forces. 
+
+
+Univariate Graph of 2010 GDP 
+The GDP rate is skewed to right, which would mean that there are moure  countries that have lower GDP compared to countries that have a high  GDP. Though this also came out to be unimodal, there is no reason that  it could not have turned out to be bimodal. There is no factor due to  which the graph has to stay unimodal every year. 
+
+
+Univariate Graph of Democracy (Political Freedom)
+The univariate graph for democracy ranges from -10 to +10. There is no  reason for us to expect this graph to have any trend. Depending on world  politics any number of countries could have more or less freedom. Based  on this data though the graph seems to be slightly skewed to the left  with more countries having a freedom score of 10. 
+
+
+Bivariate Graph of GDP vs Democracy (Political Freedom)
+The bivariate graph shows relationship between demoracy and GDP. Though  there is no linear relationship between the variables, we can see that  in this case it’s a bimodal distribution with the highest GDP being  clumped towards the extremeties of democracy (freedom)
+
+
+Bivariate Graph of Armed Forces vs Democracy (Political Freedom)
+The bivariate graph of Democracy vs Armed force rate shows what appears  to be a chart that doesn’t have any form of uniform distribution. I was  expecting to see a unimodal distribution with a peak at lower democracy  and a more uniform for the rest.The GDP rate is skewed to right, which would mean that there are moure  countries that have lower GDP compared to countries that have a high  GDP. Though this also came out to be unimodal, there is no reason that  it could not have turned out to be bimodal. There is no factor due to  which the graph has to stay unimodal every year. 
+
+
+pr-course
+Peer Graded Assignment: Making Data Management Decisions
+See end for SAS code & output link
+Polity Score:
+The Polity score data was well organized & broken out into integers between -10 to +10. Most countries with low political freedom was -7. Most of the countries in the world enjoyed good democracy scores. About 50% had scores of 6 or higher. 
+There were 52 countries that had no polity score data. The listing of the 52 countries with no polity score data will be useful to compare with the countries with no army data. 
+
+Army data:
+I looked into grouping this data into countries based on the army % of the total labor force. Most countries had a rate of 1% and there were 4 that had more  7% & higher. This data by itself may nto be that informative, but joining this with the countries democracy rate will probably be more useful. 
+There were 49 countries that didn't have any data on army. Even though there is no current use for this table, I think having a list of these countries will be useful for future analysis. 
+
+GDP:
+Based on external research, I broke out the GDP numbers into the following categories.
+Developed countries = GDP >=10,000
+Transition countries = GDP >= 4,000
+Developing countries = GDP >= 2,000
+Least Developed countries = GDP < 2,000 & < 1,000
+Labelling the income column didnt' work out well for me, so I ended up labelling them as #'s from 1-5 & providing the breakdown in the description for the table. From the data, most of the countries are clumped around the extremes. Around 36% have GDP less than 1000 & 23% have GDP>10,000. I came across a study which showed that the gap between the rickest and poorest nations is widening. This data would be interesting to evaluate over time and see if the study was indeed true. 
+
+There were 23 countries with no GDP data. But since they would be useful in future analysis, I listed below this table. 
+
+Next step would be to exclude countries that do not have all or one of the 3 data that have been identified. Then define a level that I could use for analysis. I would probably look at at countries with polityscore < 0 then compare their GDP & army rates. 
+
+Output link :  https://dl.dropboxusercontent.com/u/527953/Making%20Data%20Management%20Decisions.pdf
+SAS code:
+libname mydata "/courses/d1406ae5ba27fe300 " access=readonly;
+data new; set mydata.gapminder;
+label incomeperperson="2010 GDP"
+armedforcerate="Army as % of Total Labor Force"
+employrate="% of Total Population Employed above Age 15 as of 2007"
+internetuserate="2010 Internet Users per 100 PPL"
+lifeexpectancy="2011 Life Expectancy at Birth"
+polityscore ="2009 Democracy Score (-10 to +10)"
+relectricperperson="2008 Residential Electricity Consumption"
+urbanrate="2008 Urban Population (% of Total)";
+label income = "GDP 1=1000, 2=2000, 3=4000, 4=10000 & 5=>10000 "
+army = "Armed forces as % of total labor force"
+country_no_army_data = "Countries with no army data"
+urbanrate = "rate of urban"
+incomeperperson_no_data = "Countries with no GDP data in 2010"
+polityscore_no_data = "Countries with no Democracy score in 2009";
+
+if urbanrate LE 32.32 then urbangroup = 1;
+else if urbanrate le 50.02 then  urbangroup = 2;
+else if urbanrate le 65.22 then urbangroup = 3;
+else if urbanrate le 78.42 then urbangroup =4;
+else urbangroup =5;
+if incomeperperson LE 1000 then income = 1;
+else if incomeperperson LE 2000 then income = 2;
+else if incomeperperson LE 4000 then income = 3;
+else if incomeperperson LE 10000 then income = 4;
+else if incomeperperson GT 10000 then income = 5;
+if armedforcesrate LE 1 then army =1;
+else if armedforcesrate LE 2 then army =2;
+else if armedforcesrate LE 3 then army =3;
+else if armedforcesrate LE 4 then army =4;
+else if armedforcesrate LE 5 then army =5;
+else if armedforcesrate LE 6 then army =6;
+else if armedforcesrate LE 7 then army =7;
+else if armedforcesrate LE 8 then army =8;
+else if armedforcesrate LE 9 then army =9;
+else if armedforcesrate LE 10 then army =10;
+else army =11;
+if armedforcerate = . then country_no_army_data = country;
+if polityscore = . then polityscore_no_data = country;
+if incomeperperson = . then incomeperperson_no_data = country;
+proc sort; by country;
+/*proc print; var armedforcesrate ;*/
+proc freq; tables polityscore polityscore_no_data ;
+proc freq; tables army country_no_army_data armedforcesrate  ;
+proc freq; tables income incomeperperson_no_data incomeperperson ;
+run;
+pr-course
+Peer Graded Assignment: Running Your First Program
+1. Program code:
+
+libname mydata "/courses/d1406ae5ba27fe300 " access=readonly;
+
+data new; set mydata.gapminder;
+label incomeperperson="2010 GDP"
+armedforcerate="Army as % of Total Labor Force"
+employrate="% of Total Population Employed above Age 15 as of 2007"
+internetuserate="2010 Internet Users per 100 PPL"
+lifeexpectancy="2011 Life Expectancy at Birth"
+policyscore="2009 Democracy Score (-10 to +10)"
+relectricperperson="2008 Residential Electricity Consumption"
+urbanrate="2008 Urban Population (% of Total)";
+proc sort; by country;
+proc freq; tables incomeperperson armedforcesrate 
+polityscore urbanrate;
+/* these may be used as additional indicators of economic growth and stability in a country. 
+The life expectancy, internetuserate & electricperperson may be indicators of stability
+or political instability in a nation.
+employrate  internetuserate lifeexpectancy relectricperperson */
+run;
+
+2. Output Data:
+
+https://dl.dropboxusercontent.com/u/527953/Week2-results.pdf
+3. Description of frequency distributions
+
+For the GDP numbers, armed forces rate and urbanrate, the numbers are all over the place, so there wasn’t a good count of the frequency. At this point there is no good use for the numbers, until I find a way to group these into specific intervals such as a frequency count of all person whose income is between 200-250. 
+
+After creating a grouping of the results, it will give a better frequency table much better suited for interpretation.
+
+The only variable that can be analyzed at this point without grouping is the polity score which ranges from -10 to +10. There is 33 countries with the most freedom and 2 with the least. Most countries hover around 5-10, the frequency averages out and then at -7, the frequency jumps up to 12. This will be interesting to see which countries get grouped into this polity score of -7. 
+
+The Frequency missing =52 for this variable. There are 52 countries in the dataset that do not have this data. For these maybe other facts can be looked at to determine political freedom.
+
+pr-course
+Peer Graded Assignment: Getting Your Research Project Started
+I chose the GapMinder data set to work with.
+
+With the conflicts going on in the world, I am interested in seeing if there is/was a correlation between freedom and other variables (as of this data extract). Though not completely sure of the other variables, I think I’d like to look at GDP, armed forces, employment rate, internet usage rate, and urban rate. 
+
+At this time, I think my second topic would be to look at freedom compared to economy of the country through time. Through the ages there have been countries that have flourished because they had a strict government. I would like to see if this is supported by data.  
+
+My research question is, all variables aside, for a developing country, is there a correlation between freedom and economy? 
+
+My hypothesis is that for nations with relatively young democracies, less freedom is directly related to better economic growth. 
+
+Outside of the western world, do nations which have higher armedforcerate, and low polityscore have better incomeperperson?
+
+My codebook would be: incomeperperson, armedforcerate, employrate, Internetuserate, polityscore, & urbanrate.
+
+Searching on economy, freedom, dictator, gdp gives the following journals. These journals favor the notion that there is a positive relation between economic freedom and growth of GDP. With less freedom, corruption & power seeps into the head of states which makes them less likely to invest in the country.
+
+Carlsson, F., & Lundström, S. (2002). Economic freedom and growth: Decomposing the effects. Public choice, 112(3-4), 335-344. 
+
+Papaioannou, Jason and Luiten van Zanden, Jan, The Dictator Effect: How Long Years in Office Affects Economic Development in Africa and the Near East (May 2012). CEPR Discussion Paper No. DP8962. Available at SSRN: http://ssrn.com/abstract=2066335
+Knack, Stephen. "Determinants of Economic Growth." Southern Economic Journal 65.1 (1998): 185+. Academic OneFile. Web. 31 July 2016.
+
+Bhattarai, K. "Constitution and economic models for the Federal Republic of Nepal." Economic Journal of Nepal 33.1 (2011): 1-15.
+
+Ken Farr, W., Lord, R. A., & Wolfenbarger, J. L. (1998). Economic freedom, political freedom, and economic well-being: a causality analysis. Cato J., 18, 247.  
+
+
